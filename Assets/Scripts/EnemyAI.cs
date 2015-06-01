@@ -216,9 +216,7 @@ public class EnemyAI : MonoBehaviour
     public void SeePlayer()
     {
         if (attackType == AttackType.Shoot)
-        {
             ActiveGun(true);
-        }
         target = PlayerControl.instance.transform;
         moveSpeed = chaseMoveSpeed;
         AIStage = Stage.Chase;
@@ -228,10 +226,8 @@ public class EnemyAI : MonoBehaviour
     private void ActiveGun(bool active)
     {
         if (gunsIsNotNull)
-        {
             foreach (Gun gun in guns)
                 gun.enabled = active;
-        }
     }
 
     void StageChase()
