@@ -29,8 +29,9 @@ public class EnemyAI : MonoBehaviour
     public float firerate;
     float moveSpeed;
     public float idelMoveSpeed;
-    public float chaseMoveSpeed;
+    float chaseMoveSpeed;
     public float rotateSpeed;
+    float preChargeMoveSpeed;
 
     public bool emitWhenDead;
     public GameObject emitObject;
@@ -76,6 +77,8 @@ public class EnemyAI : MonoBehaviour
     {
         _transform = transform;
         retreatRange = lineOfSightRange * 1.5f;
+        preChargeMoveSpeed = idelMoveSpeed / 3f;
+        chaseMoveSpeed = idelMoveSpeed * 3f;
         guns = GetComponentsInChildren<Gun>();
         if (gunsIsNotNull)
         {
@@ -242,30 +245,25 @@ public class EnemyAI : MonoBehaviour
                 else if (isLeft)
                     OverAngleToFlip(false, 1f, rotationChange.x);
 
-                _transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
-
-
+                rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
                 _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-
 
                 break;
             case AttackType.Charge:
                 float yDis = target.position.y - _transform.position.y;
-                if (target.transform.position.x > _transform.position.x)
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.right), Time.fixedDeltaTime * rotateSpeed * 2);
-                }
-                else
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.left), Time.fixedDeltaTime * rotateSpeed * 2);
-                }
+
+                bool isRightSide = target.transform.position.x > _transform.position.x;
+                transform.rotation = Quaternion.Slerp(transform.rotation,
+                    Quaternion.LookRotation(isRightSide ? Vector3.right : Vector3.left),
+                    Time.fixedDeltaTime * rotateSpeed * 3);
+
                 if (yDis > 0.3f)
                 {
-                    _transform.Translate(Vector3.up * moveSpeed / 5 * Time.deltaTime);
+                    _transform.Translate(Vector3.up * preChargeMoveSpeed);
                 }
                 else if (yDis < -0.3f)
                 {
-                    _transform.Translate(Vector3.down * moveSpeed / 5 * Time.deltaTime);
+                    _transform.Translate(Vector3.down * preChargeMoveSpeed);
                 }
                 else
                 {
