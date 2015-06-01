@@ -19,11 +19,11 @@ public class EnemySight : MonoBehaviour {
 	}
 	
 
-
+    /*
 	void OnTriggerStay (Collider other)
 	{
 		// casting Line of Sight
-		if(hostAi.AIStage == EnemyAI.stage.idle)
+		if(hostAi.AIStage == EnemyAI.Stage.Idle)
 		{
 			if(other.gameObject == player)
 			{
@@ -45,5 +45,5 @@ public class EnemySight : MonoBehaviour {
 				}
 			}
 		}
-	}
+	}*/
 }
