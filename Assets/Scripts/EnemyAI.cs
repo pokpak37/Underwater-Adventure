@@ -19,6 +19,7 @@ public class EnemyAI : MonoBehaviour
     public AttackType attackType;
     public float protectionRange;
     public float detectRange;
+    float retreatRange;
     public int hp = 15;
     public int hitDmg;
 
@@ -57,9 +58,29 @@ public class EnemyAI : MonoBehaviour
     public Vector3 targetPos;
     public LayerMask playerLayer;
 
+    Gun[] guns;
+
+    bool gunsIsNotNull
+    {
+        get { return guns != null; }
+    }
+
+    Quaternion rotation
+    {
+        get { return _transform.rotation; }
+        set { _transform.rotation = value; }
+    }
+
     void Awake()
     {
         _transform = transform;
+        retreatRange = lineOfSightRange * 1.5f;
+        guns = GetComponentsInChildren<Gun>();
+        if (gunsIsNotNull)
+        {
+            foreach (Gun gun in guns)
+                gun.isEnemy = true;
+        }
     }
 
     void Start()
@@ -70,7 +91,6 @@ public class EnemyAI : MonoBehaviour
         //savePosition = transform.position;
         spawnPos = _transform.position;
         GetRandomPos();
-
     }
 
     void FixedUpdate()
@@ -148,7 +168,7 @@ public class EnemyAI : MonoBehaviour
             DetectingPlayerBySight();
         }
     }
-    
+
     void DetectingPlayerByRange()
     {
         bool playerIsInDetectRange = Physics.CheckSphere(_transform.position, detectRange, playerLayer);
@@ -176,30 +196,24 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-
     public void SeePlayer()
     {
-        switch (attackType)
+        if (attackType == AttackType.Shoot)
         {
-            case AttackType.Hit:
-                break;
-            case AttackType.Shoot:
-                Gun[] gun = GetComponentsInChildren<Gun>();
-                if (gun != null)
-                {
-                    foreach (Gun aaa in gun)
-                    {
-                        aaa.enabled = true;
-                        aaa.isEnemy = true;
-                    }
-                }
-                break;
-            case AttackType.Charge:
-                break;
+            ActiveGun(true);
         }
         target = PlayerControl.instance.transform;
         moveSpeed = chaseMoveSpeed;
         AIStage = Stage.Chase;
+    }
+
+    private void ActiveGun(bool active)
+    {
+        if (gunsIsNotNull)
+        {
+            foreach (Gun gun in guns)
+                gun.enabled = active;
+        }
     }
 
     void StageChase()
@@ -208,41 +222,27 @@ public class EnemyAI : MonoBehaviour
 
         float distance = Mathf.Abs(Vector2.Distance(transform.position, target.position));
         Quaternion targetRotation = Quaternion.LookRotation(target.position - _transform.position);
-        /*
-        if(distance>3f)
-        {
-            target = null;
-            Gun gun = GetComponentInChildren<Gun>();
-            if(gun!=null)
-                gun.enabled = false;
-            AIStage = stage.retreat;
 
-        }
-        */
+        if (distance > retreatRange)
+            AIStage = Stage.Retreat;
+
         switch (attackType)
         {
             case AttackType.Hit:
 
+                var rotationChange = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
 
+                if (rotationChange.y > 80f || rotationChange.y < 100f)
+                {
+                    if (rotationChange.x > 30f || rotationChange.x < 330f)
+                    {
+                        Flip(true, 1f);
+                    }
+                }
                 _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-                if (distance > detectRange * 1.5f)
-                {
-                    AIStage = Stage.Retreat;
-                }
+                _transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
 
-                if (distance > protectionRange * 2f)
-                {
-                    AIStage = Stage.Retreat;
-                }
 
-                if (distance > 2f)
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
-                }
-                else
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed * 3);
-                }
 
                 break;
             case AttackType.Charge:
@@ -319,6 +319,34 @@ public class EnemyAI : MonoBehaviour
 
                 break;
         }
+    }
+
+    private void Flip(bool isRight, float timeToFlip)
+    {
+        if (gunsIsNotNull)
+            ActiveGun(false);
+
+        if (isRight)
+        {
+            StartCoroutine(UpdateFlip(270f,timeToFlip));
+        }
+        else
+        {
+
+        }
+    }
+
+    private IEnumerator UpdateFlip(float yAxis, float timeToFlip)
+    {
+        Quaternion targetRotation = Quaternion.Euler(rotation.x, yAxis, 0f);
+
+        do
+        {
+            Quaternion.Slerp(rotation, targetRotation, timeToFlip);
+            yield return null;
+        } while (rotation.y > 265f || rotation.y < 275f);
+
+        rotation = targetRotation;
     }
     Vector3 GetRandomPosForShoot()
     {
