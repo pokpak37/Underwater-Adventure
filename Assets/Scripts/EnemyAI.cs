@@ -16,7 +16,30 @@ public class EnemyAI : MonoBehaviour
     {
         Hit, Shoot, Charge
     }
-    public AttackType attackType;
+    [SerializeField]
+    private AttackType attackType;
+
+    public AttackType ThisAttackType
+    {
+        get { return attackType; }
+        set 
+        { 
+            attackType = value;
+
+            switch (attackType)
+            {
+                case AttackType.Hit:
+                    attackUpdate = AttackHit;
+                    break;
+                case AttackType.Charge:
+                    attackUpdate = AttackCharge;
+                    break;
+                case AttackType.Shoot:
+                    attackUpdate = AttackShoot;
+                    break;
+            }
+        }
+    }
     public float protectionRange;
     public float detectRange;
     float retreatRange;
@@ -53,7 +76,18 @@ public class EnemyAI : MonoBehaviour
     {
         Idle, Chase, Retreat
     }
-    public Stage AIStage;
+    private Stage stage;
+
+    public Stage ThisStage
+    {
+        get { return stage; }
+        set
+        {
+            StopCoroutine(stage.ToString());
+            stage = value;
+            StartCoroutine(stage.ToString());
+        }
+    }
 
     public float lineOfSightRange = 3;
     public float fieldOfViewAngle = 110f;
@@ -82,6 +116,9 @@ public class EnemyAI : MonoBehaviour
         set { _transform.rotation = value; }
     }
 
+    delegate IEnumerator AttackUpdate(Quaternion targetRotation);
+    AttackUpdate attackUpdate;
+
     void Awake()
     {
         _transform = transform;
@@ -103,45 +140,55 @@ public class EnemyAI : MonoBehaviour
     {
         //x1 = this.gameObject.GetComponentInChildren<Animator>();
         isFlip = false;
-        AIStage = Stage.Idle;
         moveSpeed = idelMoveSpeed;
         //savePosition = position;
         spawnPos = position;
         GetRandomPos();
+        ThisStage = Stage.Idle;
+        ThisAttackType = attackType;
     }
 
     void Update()
     {
-        switch (AIStage)
-        {
-            case Stage.Idle: StageIdle();
-                break;
-            case Stage.Chase: StageChase();
-                break;
-            case Stage.Retreat: StageRetreat();
-                break;
-            default: StageIdle();
-                break;
-        }
-        transform.SetZ(0);
+        transform.SetZ(0f);
     }
 
-    void StageIdle()
+    //void Update()
+    //{
+    //    switch (AIStage)
+    //    {
+    //        case Stage.Idle: StageIdle();
+    //            break;
+    //        case Stage.Chase: StageChase();
+    //            break;
+    //        case Stage.Retreat: StageRetreat();
+    //            break;
+    //        default: StageIdle();
+    //            break;
+    //    }
+    //    transform.SetZ(0);
+    //}
+
+    IEnumerator Idle()
     {
-        // move to anywhere in circle area around spawn point every 1.5-3.0 second
-        timer += Time.deltaTime;
+        float timer = 0f;
+        for (; ; )
+        {
+            timer += Time.deltaTime;
 
-        FindingTarget();
-        IdleMove();
-        RandomizerTargetPosition();
+            FindingTarget();
+            IdleMove();
+            RandomizerTargetPosition(ref timer);
+            yield return null;
+        }
     }
 
-    private void RandomizerTargetPosition()
+    private void RandomizerTargetPosition(ref float timer)
     {
         if (timer > maxDelay)
         {
             GetRandomPos();
-            timer = 0;
+            timer -= maxDelay;
         }
     }
 
@@ -165,14 +212,13 @@ public class EnemyAI : MonoBehaviour
 
             targetPos.x += Random.Range(-protectionRange, protectionRange);
             targetPos.y += Random.Range(-protectionRange, protectionRange);
-            targetPos.z = 0;
         }
         else
         {
             targetPos = Random.insideUnitSphere * protectionRange;
-            targetPos.z = 0;
             targetPos += position;
         }
+        targetPos.z = 0;
         delay = Random.Range(minDelay, maxDelay);
 
     }
@@ -219,7 +265,7 @@ public class EnemyAI : MonoBehaviour
             ActiveGun(true);
         target = PlayerControl.instance.transform;
         moveSpeed = chaseMoveSpeed;
-        AIStage = Stage.Chase;
+        ThisStage = Stage.Chase;
         timer = 0f;
     }
 
@@ -230,76 +276,95 @@ public class EnemyAI : MonoBehaviour
                 gun.enabled = active;
     }
 
-    void StageChase()
+    IEnumerator AttackHit(Quaternion targetRotation)
+    {
+        for (; ; )
+        {
+            var rotationChange = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+
+            bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
+            bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
+
+            if (isRight)
+                OverAngleToFlip(true, 1f, rotationChange.x);
+            else if (isLeft)
+                OverAngleToFlip(false, 1f, rotationChange.x);
+
+            RotateTowardTarget(targetRotation);
+            _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+    }
+
+    IEnumerator AttackCharge(Quaternion targetRotation)
+    {
+        for (; ; )
+        {
+            float yDis = target.position.y - position.y;
+
+            RotateToTargetSide();
+
+            if (yDis > 0.3f)
+                _transform.Translate(Vector3.up * preChargeMoveSpeed * Time.deltaTime);
+            else if (yDis < -0.3f)
+                _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
+            else
+            {
+                yield return new WaitForSeconds(2f);
+                _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
+            }
+            yield return null;
+        }
+    }
+
+    IEnumerator AttackShoot(Quaternion targetRotation)
+    {
+        for (; ; )
+        {
+            if (isLockPlayer)
+                RotateTowardTarget(targetRotation);
+            else
+            {
+                RotateToTargetSide();
+
+                float yDis = target.position.y - position.y;
+                if (yDis > 0.3f)
+                    _transform.Translate(Vector3.up * idelMoveSpeed * Time.deltaTime);
+                else if (yDis < -0.3f)
+                    _transform.Translate(Vector3.down * idelMoveSpeed * Time.deltaTime);
+            }
+
+            float xDistance = X_Distance(position, target.position);
+
+            if (xDistance < distanceGoBack)
+                _transform.Translate(Vector3.back * idelMoveSpeed * 3 * Time.deltaTime);
+            else if (xDistance > distanceFollow)
+                _transform.Translate(Vector3.forward * idelMoveSpeed * 3 * Time.deltaTime);
+
+            yield return null;
+        }
+    }
+
+    IEnumerator Chase()
     {
         // shoot at player or move toward player
 
+        for (; ; )
+        {
+            CheckDistanceMoreThanRetreatRange();
+            Quaternion targetRotation = Quaternion.LookRotation(target.position - position);
+
+            yield return attackUpdate(targetRotation).MoveNext();
+        }
+    }
+
+    private void CheckDistanceMoreThanRetreatRange()
+    {
         float distance = Mathf.Abs(Vector2.Distance(position, target.position));
-        Quaternion targetRotation = Quaternion.LookRotation(target.position - position);
 
         if (distance > retreatRange)
-            AIStage = Stage.Retreat;
-
-        switch (attackType)
-        {
-            case AttackType.Hit:
-
-                var rotationChange = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-
-                bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
-                bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
-
-                if (isRight)
-                    OverAngleToFlip(true, 1f, rotationChange.x);
-                else if (isLeft)
-                    OverAngleToFlip(false, 1f, rotationChange.x);
-
-                RotateTowardTarget(targetRotation);
-                _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-
-                break;
-            case AttackType.Charge:
-                {
-                    float yDis = target.position.y - position.y;
-
-                    RotateToTargetSide();
-
-                    if (yDis > 0.3f)
-                        _transform.Translate(Vector3.up * preChargeMoveSpeed * Time.deltaTime);
-                    else if (yDis < -0.3f)
-                        _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
-                    else
-                    {
-                        timer += Time.deltaTime;
-                        if (timer > 2)
-                            AIStage = Stage.Retreat;
-                    }
-                }
-                break;
-            case AttackType.Shoot:
-                {
-                    if (isLockPlayer)
-                        RotateTowardTarget(targetRotation);
-                    else
-                    {
-                        RotateToTargetSide();
-
-                        float yDis = target.position.y - position.y;
-                        if (yDis > 0.3f)
-                            _transform.Translate(Vector3.up * idelMoveSpeed * Time.deltaTime);
-                        else if (yDis < -0.3f)
-                            _transform.Translate(Vector3.down * idelMoveSpeed * Time.deltaTime);
-                    }
-
-                    float xDistance = X_Distance(position, target.position);
-
-                    if (xDistance < distanceGoBack)
-                        _transform.Translate(Vector3.back * idelMoveSpeed * 3 * Time.deltaTime);
-                    else if (xDistance > distanceFollow)
-                        _transform.Translate(Vector3.forward * idelMoveSpeed * 3 * Time.deltaTime);
-                }
-                break;
-        }
+            ThisStage = Stage.Retreat;
     }
 
     float X_Distance(Vector3 vector1, Vector3 vector2)
@@ -370,7 +435,7 @@ public class EnemyAI : MonoBehaviour
                 if (distance < 0.3f)
                 {
                     moveSpeed = idelMoveSpeed;
-                    AIStage = Stage.Idle;
+                    stage = Stage.Idle;
                 }
                 break;
             case AttackType.Charge:
@@ -393,7 +458,7 @@ public class EnemyAI : MonoBehaviour
                         }
                     }
                     moveSpeed = idelMoveSpeed;
-                    AIStage = Stage.Idle;
+                    stage = Stage.Idle;
                 }
                 break;
         }
