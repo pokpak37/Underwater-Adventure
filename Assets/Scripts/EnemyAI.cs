@@ -23,6 +23,9 @@ public class EnemyAI : MonoBehaviour
     public int hp = 15;
     public int hitDmg;
 
+    float distanceFollow;
+    float distanceGoBack;
+
     Vector3 moveDirection;
     public bool isLockPlayer;
     public GameObject bullet;
@@ -67,6 +70,12 @@ public class EnemyAI : MonoBehaviour
     }
     bool isFlip;
 
+    Vector3 position
+    {
+        get { return _transform.position; }
+        set { _transform.position = value; }
+    }
+
     Quaternion rotation
     {
         get { return _transform.rotation; }
@@ -79,6 +88,9 @@ public class EnemyAI : MonoBehaviour
         retreatRange = lineOfSightRange * 1.5f;
         preChargeMoveSpeed = idelMoveSpeed / 1f;
         chaseMoveSpeed = idelMoveSpeed * 3f;
+        distanceFollow = lineOfSightRange * 1.1f;
+        distanceGoBack = lineOfSightRange * 0.9f;
+
         guns = GetComponentsInChildren<Gun>();
         if (gunsIsNotNull)
         {
@@ -93,8 +105,8 @@ public class EnemyAI : MonoBehaviour
         isFlip = false;
         AIStage = Stage.Idle;
         moveSpeed = idelMoveSpeed;
-        //savePosition = transform.position;
-        spawnPos = _transform.position;
+        //savePosition = position;
+        spawnPos = position;
         GetRandomPos();
     }
 
@@ -135,11 +147,11 @@ public class EnemyAI : MonoBehaviour
 
     private void IdleMove()
     {
-        if (Mathf.Abs(Vector2.Distance(_transform.position, targetPos)) > 0.3f)
+        if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(targetPos - _transform.position);
-            //_rigidbody.MoveRotation (Quaternion.RotateTowards (_transform.rotation, targetRotation, 5));
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
+            //_rigidbody.MoveRotation (Quaternion.RotateTowards (_rotation, targetRotation, 5));
+            rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
             //_rigidbody.AddForce (transform.forward * moveSpeed * 3);
         }
@@ -159,7 +171,7 @@ public class EnemyAI : MonoBehaviour
         {
             targetPos = Random.insideUnitSphere * protectionRange;
             targetPos.z = 0;
-            targetPos += transform.position;
+            targetPos += position;
         }
         delay = Random.Range(minDelay, maxDelay);
 
@@ -176,7 +188,7 @@ public class EnemyAI : MonoBehaviour
 
     void DetectingPlayerByRange()
     {
-        bool playerIsInDetectRange = Physics.CheckSphere(_transform.position, detectRange, playerLayer);
+        bool playerIsInDetectRange = Physics.CheckSphere(position, detectRange, playerLayer);
         if (playerIsInDetectRange)
         {
             print("Player detected !!!");
@@ -186,10 +198,10 @@ public class EnemyAI : MonoBehaviour
 
     void DetectingPlayerBySight()
     {
-        bool playerIsInSight = Physics.CheckSphere(_transform.position, lineOfSightRange, playerLayer);
+        bool playerIsInSight = Physics.CheckSphere(position, lineOfSightRange, playerLayer);
         if (playerIsInSight)
         {
-            Vector3 direction = PlayerControl.instance.transform.position - _transform.position;
+            Vector3 direction = PlayerControl.instance.transform.position - position;
             float angle = Vector3.Angle(direction, transform.forward);
             float halfFieldOfViewAngle = fieldOfViewAngle / 2;
 
@@ -226,8 +238,8 @@ public class EnemyAI : MonoBehaviour
     {
         // shoot at player or move toward player
 
-        float distance = Mathf.Abs(Vector2.Distance(transform.position, target.position));
-        Quaternion targetRotation = Quaternion.LookRotation(target.position - _transform.position);
+        float distance = Mathf.Abs(Vector2.Distance(position, target.position));
+        Quaternion targetRotation = Quaternion.LookRotation(target.position - position);
 
         if (distance > retreatRange)
             AIStage = Stage.Retreat;
@@ -236,7 +248,7 @@ public class EnemyAI : MonoBehaviour
         {
             case AttackType.Hit:
 
-                var rotationChange = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+                var rotationChange = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
                 bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
                 bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
@@ -246,78 +258,73 @@ public class EnemyAI : MonoBehaviour
                 else if (isLeft)
                     OverAngleToFlip(false, 1f, rotationChange.x);
 
-                rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+                RotateTowardTarget(targetRotation);
                 _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 
                 break;
             case AttackType.Charge:
-                float yDis = target.position.y - _transform.position.y;
-
-                bool isRightSide = target.transform.position.x > _transform.position.x;
-                transform.rotation = Quaternion.Slerp(transform.rotation,
-                    Quaternion.LookRotation(isRightSide ? Vector3.right : Vector3.left),
-                    Time.deltaTime * rotateSpeed * 3);
-
-                if (yDis > 0.3f)
-                    _transform.Translate(Vector3.up * preChargeMoveSpeed * Time.deltaTime);
-                else if (yDis < -0.3f)
-                    _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
-                else
                 {
-                    timer += Time.deltaTime;
-                    if (timer > 2)
-                        AIStage = Stage.Retreat;
+                    float yDis = target.position.y - position.y;
+
+                    RotateToTargetSide();
+
+                    if (yDis > 0.3f)
+                        _transform.Translate(Vector3.up * preChargeMoveSpeed * Time.deltaTime);
+                    else if (yDis < -0.3f)
+                        _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
+                    else
+                    {
+                        timer += Time.deltaTime;
+                        if (timer > 2)
+                            AIStage = Stage.Retreat;
+                    }
                 }
                 break;
             case AttackType.Shoot:
-                if (isLockPlayer)
                 {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
-                }
-                else
-                {
-                    if (target.transform.position.x > _transform.position.x)
-                    {
-                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.right), Time.deltaTime * rotateSpeed);
-                    }
+                    if (isLockPlayer)
+                        RotateTowardTarget(targetRotation);
                     else
                     {
-                        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.left), Time.deltaTime * rotateSpeed);
+                        RotateToTargetSide();
+
+                        float yDis = target.position.y - position.y;
+                        if (yDis > 0.3f)
+                            _transform.Translate(Vector3.up * idelMoveSpeed * Time.deltaTime);
+                        else if (yDis < -0.3f)
+                            _transform.Translate(Vector3.down * idelMoveSpeed * Time.deltaTime);
                     }
 
-                    timer += Time.deltaTime;
-                    if (timer > maxDelay)
-                    {
-                        targetPos = GetRandomPosForShoot();
-                        timer = 0;
-                    }
-                    float moveLeft = Mathf.Abs(Vector2.Distance(transform.position, targetPos));
-                    if (moveLeft > 0.3f)
-                    {
-                        transform.Translate(moveDirection * moveSpeed / 2 * Time.deltaTime);
-                    }
-                }
+                    float xDistance = X_Distance(position, target.position);
 
-                if (distance > detectRange * 1.5f)
-                {
-                    AIStage = Stage.Retreat;
+                    if (xDistance < distanceGoBack)
+                        _transform.Translate(Vector3.back * idelMoveSpeed * 3 * Time.deltaTime);
+                    else if (xDistance > distanceFollow)
+                        _transform.Translate(Vector3.forward * idelMoveSpeed * 3 * Time.deltaTime);
                 }
-                else if (distance > detectRange)
-                {
-                    _transform.Translate(Vector3.forward * moveSpeed / 5 * Time.deltaTime);
-                }
-                else if (distance < detectRange * 0.5f)
-                {
-                    _transform.Translate(Vector3.back * moveSpeed / 5 * Time.deltaTime);
-                }
-
-                if (distance > protectionRange * 2f)
-                {
-                    AIStage = Stage.Retreat;
-                }
-
                 break;
         }
+    }
+
+    float X_Distance(Vector3 vector1, Vector3 vector2)
+    {
+        if (vector1.x > vector2.x)
+            return vector1.x - vector2.x;
+        else
+            return vector2.x - vector1.x;
+    }
+
+    private void RotateTowardTarget(Quaternion targetRotation)
+    {
+        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+    }
+
+    private void RotateToTargetSide()
+    {
+        bool isRightSide = target.position.x > position.x;
+        rotation = Quaternion.Slerp(rotation,
+            Quaternion.LookRotation(isRightSide ? Vector3.right : Vector3.left),
+            Time.deltaTime * rotateSpeed * 3);
     }
 
     private void OverAngleToFlip(bool isFlipToLeft, float time, float xRotationChange)
@@ -351,20 +358,6 @@ public class EnemyAI : MonoBehaviour
         rotation = targetRotation;
         isFlip = false;
     }
-    Vector3 GetRandomPosForShoot()
-    {
-        Vector3 pos = transform.position;
-        pos.y = target.position.y;
-        if (pos.y > _transform.position.y)
-        {
-            moveDirection = Vector3.up;
-        }
-        else
-        {
-            moveDirection = Vector3.down;
-        }
-        return pos;
-    }
 
     void StageRetreat()
     {
@@ -373,9 +366,9 @@ public class EnemyAI : MonoBehaviour
         switch (attackType)
         {
             case AttackType.Hit:
-                distance = Mathf.Abs(Vector2.Distance(transform.position, spawnPos));
-                targetRotation = Quaternion.LookRotation(spawnPos - _transform.position);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
+                distance = Mathf.Abs(Vector2.Distance(position, spawnPos));
+                targetRotation = Quaternion.LookRotation(spawnPos - position);
+                rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
 
                 if (distance < 0.3f)
@@ -388,9 +381,9 @@ public class EnemyAI : MonoBehaviour
                 _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
                 break;
             case AttackType.Shoot:
-                distance = Mathf.Abs(Vector2.Distance(transform.position, spawnPos));
-                targetRotation = Quaternion.LookRotation(spawnPos - _transform.position);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
+                distance = Mathf.Abs(Vector2.Distance(position, spawnPos));
+                targetRotation = Quaternion.LookRotation(spawnPos - position);
+                rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
 
                 if (distance < 0.3f)
@@ -417,7 +410,7 @@ public class EnemyAI : MonoBehaviour
         print(name + " get hit : " + dmg + " HP : " + hp);
         if (hp <= 0)
         {
-            Instantiate(myExplosionParticle, _transform.position, Quaternion.identity);
+            Instantiate(myExplosionParticle, position, Quaternion.identity);
             Destruct();
         }
 
