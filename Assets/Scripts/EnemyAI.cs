@@ -5,7 +5,7 @@ public class EnemyAI : MonoBehaviour
 {
 
     Transform _transform;
-
+    
     public enum Habit
     {
         NotFight, Argressive, Protective
@@ -22,8 +22,8 @@ public class EnemyAI : MonoBehaviour
     public AttackType ThisAttackType
     {
         get { return attackType; }
-        set 
-        { 
+        set
+        {
             attackType = value;
 
             switch (attackType)
@@ -116,8 +116,11 @@ public class EnemyAI : MonoBehaviour
         set { _transform.rotation = value; }
     }
 
-    delegate IEnumerator AttackUpdate(Quaternion targetRotation);
+    delegate IEnumerator AttackUpdate();
     AttackUpdate attackUpdate;
+
+
+    Quaternion targetRotation;
 
     void Awake()
     {
@@ -148,9 +151,15 @@ public class EnemyAI : MonoBehaviour
         ThisAttackType = attackType;
     }
 
-    void Update()
+    IEnumerator UpdateZPosAndTargetRotation()
     {
-        transform.SetZ(0f);
+        for(;;)
+        {
+            transform.SetZ(0f);
+            if (target != null)
+                targetRotation = Quaternion.LookRotation(target.position - position);
+            yield return null;
+        }        
     }
 
     //void Update()
@@ -276,7 +285,7 @@ public class EnemyAI : MonoBehaviour
                 gun.enabled = active;
     }
 
-    IEnumerator AttackHit(Quaternion targetRotation)
+    IEnumerator AttackHit()
     {
         for (; ; )
         {
@@ -297,8 +306,9 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    IEnumerator AttackCharge(Quaternion targetRotation)
+    IEnumerator AttackCharge()
     {
+        float timer = 0f;
         for (; ; )
         {
             float yDis = target.position.y - position.y;
@@ -311,14 +321,29 @@ public class EnemyAI : MonoBehaviour
                 _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
             else
             {
-                yield return new WaitForSeconds(2f);
-                _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
+                timer += Time.deltaTime;
+                if (timer > 2f)
+                {
+                    StartCoroutine(ChargeUpdate());
+                    StopCoroutine(Chase());
+                    yield break;
+                }
             }
             yield return null;
         }
     }
 
-    IEnumerator AttackShoot(Quaternion targetRotation)
+    private IEnumerator ChargeUpdate()
+    {
+        while (X_Distance(target.position, position) < 10f)
+        {
+            _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
+            yield return null;
+        }
+        ThisStage = Stage.Retreat;
+    }
+
+    IEnumerator AttackShoot()
     {
         for (; ; )
         {
@@ -349,13 +374,12 @@ public class EnemyAI : MonoBehaviour
     IEnumerator Chase()
     {
         // shoot at player or move toward player
+        StartCoroutine(attackUpdate());
 
         for (; ; )
         {
             CheckDistanceMoreThanRetreatRange();
-            Quaternion targetRotation = Quaternion.LookRotation(target.position - position);
-
-            yield return attackUpdate(targetRotation).MoveNext();
+            yield return null;
         }
     }
 
@@ -420,47 +444,38 @@ public class EnemyAI : MonoBehaviour
         isFlip = false;
     }
 
-    void StageRetreat()
+    IEnumerator Retreat()
     {
-        float distance;
-        Quaternion targetRotation;
-        switch (attackType)
+        if (habit == Habit.Protective)
         {
-            case AttackType.Hit:
+            float distance;
+            Quaternion targetRotation;
+            ActiveGun(false);
+
+            do
+            {
                 distance = Mathf.Abs(Vector2.Distance(position, spawnPos));
                 targetRotation = Quaternion.LookRotation(spawnPos - position);
                 rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
 
-                if (distance < 0.3f)
-                {
-                    moveSpeed = idelMoveSpeed;
-                    stage = Stage.Idle;
-                }
-                break;
-            case AttackType.Charge:
-                _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
-                break;
-            case AttackType.Shoot:
-                distance = Mathf.Abs(Vector2.Distance(position, spawnPos));
-                targetRotation = Quaternion.LookRotation(spawnPos - position);
+                yield return null;
+            } while (distance <= 0.3f);
+
+            moveSpeed = idelMoveSpeed;
+            stage = Stage.Idle;
+        }
+        else if (habit == Habit.Argressive)
+        {
+            StopCoroutine(UpdateZPosAndTargetRotation());
+            do
+            {
+                targetRotation = Quaternion.LookRotation(Vector3.forward);
                 rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
-
-                if (distance < 0.3f)
-                {
-                    Gun[] gun = GetComponentsInChildren<Gun>();
-                    if (gun != null)
-                    {
-                        foreach (Gun aaa in gun)
-                        {
-                            aaa.enabled = false;
-                        }
-                    }
-                    moveSpeed = idelMoveSpeed;
-                    stage = Stage.Idle;
-                }
-                break;
+                yield return null;
+            } while (position.z < 15f);
+            Destruct();
         }
 
     }
@@ -491,7 +506,5 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
         //PoolingManager.instance.enemyPooling.ReturnToPool(this);
     }
-
-
 
 }
