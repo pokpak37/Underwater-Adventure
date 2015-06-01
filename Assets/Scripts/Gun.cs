@@ -15,8 +15,7 @@ public class Gun : MonoBehaviour {
 
 	public Transform GunPoint;
 
-	public GameObject bulletPrefab;
-	BulletName bulletName;
+	public BulletName bulletName;
 
 	float timer;
 	float timerRound;
@@ -42,7 +41,7 @@ public class Gun : MonoBehaviour {
 		timer += Time.deltaTime;
 		if(timer>=fireRate)
 		{
-			CallBullet(bulletPrefab);
+			CallBullet(bulletName);
 			timer = 0;
 		}
 	}
@@ -59,7 +58,7 @@ public class Gun : MonoBehaviour {
 				timer+=Time.deltaTime;
 				if(timer>=fireRate)
 				{
-					CallBullet(bulletPrefab);
+					CallBullet(bulletName);
 					bulletLeftInRound --;
 					timer = 0;
 				}
@@ -72,39 +71,9 @@ public class Gun : MonoBehaviour {
 		}
 	}
 
-	void CallBullet(GameObject bulletprefab)
+	void CallBullet(BulletName bulletName)
 	{
-		switch(bulletprefab.name.Substring(1,1))
-		{
-		case "0": bulletName = BulletName.MachineGun;
-			break;
-		case "1": bulletName = BulletName.Cannon;
-			break;
-		case "2": bulletName = BulletName.Purse_Laser;
-			break;
-		case "3": bulletName = BulletName.Wave;
-			break;
-		case "4": bulletName = BulletName.Laser_Beam;
-			break;
-		case "5": bulletName = BulletName.Missile;
-			break;
-		case "6": bulletName = BulletName.Holming_Missile;
-			break;
-		case "7": bulletName = BulletName.Bomb;
-			break;
-		case "8": bulletName = BulletName.Electric;
-			break;		
-		}
 		(PoolingManager.instance.bulletPooling[(int)bulletName].CallPooling(GunPoint.position,submarine.rotation)).isEnemy = isEnemy;
-		//bullet.myName = bulletName;
-		
-		//print(bullet.name + (int)bulletName);
-		/*
-		Bullet bullet =  PoolingManager.instance.bulletPooling[(int)BulletName.Holming_Missile].CallPooling(GunPoint.position,submarine.rotation);
-		bullet.myName = BulletName.Holming_Missile;
-		
-		print(bullet.name + (int)BulletName.Holming_Missile);
-		*/
 
 	}
 
