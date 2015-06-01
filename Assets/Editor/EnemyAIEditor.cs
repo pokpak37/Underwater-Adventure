@@ -9,7 +9,7 @@ public class EnemyAIEditor : Editor
 	{
 		EnemyAI myEnemy =  (EnemyAI)target;
 
-		//DrawDefaultInspector();
+		DrawDefaultInspector();
 		/*
 		myEnemy.dmg = EditorGUILayout.IntSlider("Dmg per Bullet",myEnemy.dmg,1,25);
 		myEnemy.speed = EditorGUILayout.Slider("start speed",myEnemy.speed,-5f,15f);

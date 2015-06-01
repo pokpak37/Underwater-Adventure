@@ -25,8 +25,8 @@ public class BulletEditor : Editor
 		{
 			GUILayout.Label ("Drop Panel");
 			myBullet.dropSpeedGainRate = EditorGUILayout.Slider("Drop Acceleration",myBullet.dropSpeedGainRate,1f,10f);
+			myBullet.noDropWhenReachMaxDropSpeed = EditorGUILayout.Toggle("No Drop When Reach Max Speed",myBullet.noDropWhenReachMaxDropSpeed);
 			myBullet.dropspeedMax = EditorGUILayout.Slider("Max Drop Speed",myBullet.dropspeedMax,1f,5f);
-			myBullet.noDropWhenReachMaxDropSpeed = EditorGUILayout.Toggle("Max Drop Speed",myBullet.noDropWhenReachMaxDropSpeed);
 		}
 
 		myBullet.isHolming = EditorGUILayout.Toggle("Is Holming",myBullet.isHolming);
