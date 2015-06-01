@@ -64,6 +64,7 @@ public class EnemyAI : MonoBehaviour
     {
         get { return guns != null; }
     }
+    bool isFlip;
 
     Quaternion rotation
     {
@@ -86,6 +87,7 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         //x1 = this.gameObject.GetComponentInChildren<Animator>();
+        isFlip = false;
         AIStage = Stage.Idle;
         moveSpeed = idelMoveSpeed;
         //savePosition = transform.position;
@@ -232,16 +234,18 @@ public class EnemyAI : MonoBehaviour
 
                 var rotationChange = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
 
-                if (rotationChange.y > 80f || rotationChange.y < 100f)
-                {
-                    if (rotationChange.x > 30f || rotationChange.x < 330f)
-                    {
-                        Flip(true, 1f);
-                    }
-                }
-                _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+                bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
+                bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
+
+                if (isRight)
+                    OverAngleToFlip(true, 1f, rotationChange.x);
+                else if (isLeft)
+                    OverAngleToFlip(false, 1f, rotationChange.x);
+
                 _transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotateSpeed);
 
+
+                _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 
 
                 break;
@@ -321,32 +325,36 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    private void OverAngleToFlip(bool isFlipToLeft, float time, float xRotationChange)
+    {
+        bool isOverAngle = xRotationChange > 30f || xRotationChange < 330f;
+        if (isOverAngle)
+            if (!isFlip)
+                Flip(isFlipToLeft, time);
+    }
+
     private void Flip(bool isRight, float timeToFlip)
     {
         if (gunsIsNotNull)
             ActiveGun(false);
 
-        if (isRight)
-        {
-            StartCoroutine(UpdateFlip(270f,timeToFlip));
-        }
-        else
-        {
-
-        }
+        StartCoroutine(UpdateFlip(isRight, timeToFlip));
     }
 
-    private IEnumerator UpdateFlip(float yAxis, float timeToFlip)
+    private IEnumerator UpdateFlip(bool isRight, float timeToFlip)
     {
+        isFlip = true;
+        float yAxis = isRight ? 270f : 90f;
         Quaternion targetRotation = Quaternion.Euler(rotation.x, yAxis, 0f);
 
         do
         {
             Quaternion.Slerp(rotation, targetRotation, timeToFlip);
             yield return null;
-        } while (rotation.y > 265f || rotation.y < 275f);
+        } while (rotation.y > yAxis - 5f || rotation.y < yAxis + 5);
 
         rotation = targetRotation;
+        isFlip = false;
     }
     Vector3 GetRandomPosForShoot()
     {

@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class EnemySight : MonoBehaviour {
-
+    /*
 	private EnemyAI hostAi;
 	private SphereCollider col;                   
 	public GameObject player;                     
@@ -19,7 +19,7 @@ public class EnemySight : MonoBehaviour {
 	}
 	
 
-    /*
+    
 	void OnTriggerStay (Collider other)
 	{
 		// casting Line of Sight
