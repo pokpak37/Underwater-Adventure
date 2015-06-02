@@ -3,7 +3,6 @@ using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
-
     Transform _transform;
     
     public enum Habit
@@ -43,8 +42,8 @@ public class EnemyAI : MonoBehaviour
     public float protectionRange;
     public float detectRange;
     float retreatRange;
-    public int hp = 15;
-    public int hitDmg;
+    public float hp = 15;
+    public float hitDmg;
 
     float distanceFollow;
     float distanceGoBack;
@@ -125,12 +124,7 @@ public class EnemyAI : MonoBehaviour
     void Awake()
     {
         _transform = transform;
-        retreatRange = lineOfSightRange * 1.5f;
-        preChargeMoveSpeed = idelMoveSpeed / 1f;
-        chaseMoveSpeed = idelMoveSpeed * 3f;
-        distanceFollow = lineOfSightRange * 1.1f;
-        distanceGoBack = lineOfSightRange * 0.9f;
-
+        
         guns = GetComponentsInChildren<Gun>();
         if (gunsIsNotNull)
         {
@@ -139,9 +133,23 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    void SetStatsByGameLevel()
+    {
+       // EnemyAI thisAI = this.GetComponent<EnemyAI>();
+       // LevelControl.instance.CalculateLevel(1, ref protectionRange, ref detectRange,
+         //                       ref hp, ref hitDmg, ref lineOfSightRange);
+    }
+
     void Start()
     {
         //x1 = this.gameObject.GetComponentInChildren<Animator>();
+        SetStatsByGameLevel();
+        retreatRange = lineOfSightRange * 1.5f;
+        preChargeMoveSpeed = idelMoveSpeed / 1f;
+        chaseMoveSpeed = idelMoveSpeed * 3f;
+        distanceFollow = lineOfSightRange * 1.1f;
+        distanceGoBack = lineOfSightRange * 0.9f;
+
         isFlip = false;
         moveSpeed = idelMoveSpeed;
         //savePosition = position;
@@ -506,5 +514,7 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
         //PoolingManager.instance.enemyPooling.ReturnToPool(this);
     }
+
+    
 
 }

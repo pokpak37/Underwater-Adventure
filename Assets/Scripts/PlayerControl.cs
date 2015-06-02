@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
 
-	public int hp;
+	public float hp;
 	public bool TouchActived;
 	
 	public float powerX;
@@ -143,7 +143,7 @@ public class PlayerControl : MonoBehaviour {
 		myTranform.position = RespawnPoint.instance.respawnPointTransforms[x].position;
 	}
 
-	public void GetHit(int dmg)
+	public void GetHit(float dmg)
 	{
 		hp-= dmg;
 		print("Player hp" + hp);
