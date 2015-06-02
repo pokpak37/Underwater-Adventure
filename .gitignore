@@ -5,3 +5,15 @@ Temp/*
 *.pidb
 *.userprefs
 *.unityproj
+UnderWater/UnderWater.exe
+UnderWater/UnderWater_Data/Managed/Assembly-CSharp-firstpass.dll
+UnderWater/UnderWater_Data/Managed/Assembly-CSharp.dll
+UnderWater/UnderWater_Data/Managed/Mono.Security.dll
+UnderWater/UnderWater_Data/Managed/System.Core.dll
+UnderWater/UnderWater_Data/Managed/System.dll
+UnderWater/UnderWater_Data/Managed/UnityEngine.UI.dll
+UnderWater/UnderWater_Data/Managed/UnityEngine.dll
+UnderWater/UnderWater_Data/Managed/mscorlib.dll
+UnderWater/UnderWater_Data/Mono/mono.dll
+Underwater Adventure-csharp.v11.suo
+obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
