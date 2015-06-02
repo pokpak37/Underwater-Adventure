@@ -1,0 +1,543 @@
+fileFormatVersion: 2
+guid: 013b1eb58d615504d8d5aba09d905daa
+timeCreated: 1432033653
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: pasted__pasted__pasted__pasted__pasted__pasted__pasted__polySur
+    100004: pasted__pasted__polySurface102
+    100006: pasted__pasted__polySurface105
+    100008: pasted__pasted__polySurface77
+    100010: pasted__pasted__polySurface86
+    100012: pasted__pasted__polySurface89
+    100014: pasted__pasted__polySurface90
+    100016: pasted__pasted__polySurface91
+    100018: pasted__pasted__polySurface92
+    100020: pasted__pasted__polySurface93
+    100022: pasted__pasted__polySurface94
+    100024: pasted__polySurface102
+    100026: pasted__polySurface105
+    100028: pasted__polySurface106
+    100030: pasted__polySurface77
+    100032: pasted__polySurface86
+    100034: pasted__polySurface89
+    100036: pasted__polySurface90
+    100038: pasted__polySurface91
+    100040: pasted__polySurface92
+    100042: pasted__polySurface93
+    100044: pasted__polySurface94
+    100046: polySurface106
+    100048: polySurface107
+    100050: polySurface108
+    100052: polySurface77
+    100054: polySurface86
+    100056: polySurface89
+    100058: polySurface90
+    100060: polySurface91
+    100062: polySurface92
+    100064: polySurface93
+    100066: polySurface94
+    100068: Boss01_Lv01
+    100070: Boss01_Lv02
+    100072: Boss01_Lv03
+    100074: armor_body_down
+    100076: armor_body_up
+    100078: armor_down
+    100080: armor_head
+    100082: armor_mouth_lv3
+    100084: armor_tail_down
+    100086: armor_tail_up
+    100088: armor_up
+    100090: body
+    100092: head_lv2
+    100094: head_lv3
+    100096: mouth
+    100098: Armature
+    100100: Bone
+    100102: Bone.001
+    100104: Bone.003
+    100106: Bone.003_end
+    100108: Bone.005
+    100110: Bone.005_end
+    100112: Bone.006
+    100114: Bone.006_end
+    100116: Bone.007
+    100118: Bone.007_end
+    100120: Bone.008
+    100122: Bone.008_end
+    100124: Bone.009
+    100126: Bone.009_end
+    100128: Bone.012
+    100130: Bone.012_end
+    100132: Bone.013
+    100134: Bone.013_end
+    100136: fin_down01
+    100138: fin_down02
+    100140: fin_tail
+    100142: fin_tail.001
+    100144: fin_up
+    100146: weakness_down
+    100148: weakness_up
+    100150: Bone_body
+    100152: Bone_mouth
+    100154: Bone_mouth_end
+    100156: Bone_root
+    100158: Bone_tail
+    100160: Bone_tin_down_L_01
+    100162: Bone_tin_down_L_01_end
+    100164: Bone_tin_down_L_02
+    100166: Bone_tin_down_L_02_end
+    100168: Bone_tin_down_R_01
+    100170: Bone_tin_down_R_01_end
+    100172: Bone_tin_down_R_02
+    100174: Bone_tin_down_R_02_end
+    100176: Bone_tin_tail_01
+    100178: Bone_tin_tail_01_end
+    100180: Bone_tin_tail_02
+    100182: Bone_tin_tail_02_end
+    100184: Bone_tin_top_01
+    100186: Bone_tin_top_01_end
+    100188: Bone_tin_top_02
+    100190: Bone_tin_top_02_end
+    100192: fin_down01_L
+    100194: fin_down01_R
+    100196: fin_down02_L
+    100198: fin_down02_R
+    100200: fin_tail_down
+    100202: fin_tail_up
+    400000: //RootNode
+    400002: pasted__pasted__pasted__pasted__pasted__pasted__pasted__polySur
+    400004: pasted__pasted__polySurface102
+    400006: pasted__pasted__polySurface105
+    400008: pasted__pasted__polySurface77
+    400010: pasted__pasted__polySurface86
+    400012: pasted__pasted__polySurface89
+    400014: pasted__pasted__polySurface90
+    400016: pasted__pasted__polySurface91
+    400018: pasted__pasted__polySurface92
+    400020: pasted__pasted__polySurface93
+    400022: pasted__pasted__polySurface94
+    400024: pasted__polySurface102
+    400026: pasted__polySurface105
+    400028: pasted__polySurface106
+    400030: pasted__polySurface77
+    400032: pasted__polySurface86
+    400034: pasted__polySurface89
+    400036: pasted__polySurface90
+    400038: pasted__polySurface91
+    400040: pasted__polySurface92
+    400042: pasted__polySurface93
+    400044: pasted__polySurface94
+    400046: polySurface106
+    400048: polySurface107
+    400050: polySurface108
+    400052: polySurface77
+    400054: polySurface86
+    400056: polySurface89
+    400058: polySurface90
+    400060: polySurface91
+    400062: polySurface92
+    400064: polySurface93
+    400066: polySurface94
+    400068: Boss01_Lv01
+    400070: Boss01_Lv02
+    400072: Boss01_Lv03
+    400074: armor_body_down
+    400076: armor_body_up
+    400078: armor_down
+    400080: armor_head
+    400082: armor_mouth_lv3
+    400084: armor_tail_down
+    400086: armor_tail_up
+    400088: armor_up
+    400090: body
+    400092: head_lv2
+    400094: head_lv3
+    400096: mouth
+    400098: Armature
+    400100: Bone
+    400102: Bone.001
+    400104: Bone.003
+    400106: Bone.003_end
+    400108: Bone.005
+    400110: Bone.005_end
+    400112: Bone.006
+    400114: Bone.006_end
+    400116: Bone.007
+    400118: Bone.007_end
+    400120: Bone.008
+    400122: Bone.008_end
+    400124: Bone.009
+    400126: Bone.009_end
+    400128: Bone.012
+    400130: Bone.012_end
+    400132: Bone.013
+    400134: Bone.013_end
+    400136: fin_down01
+    400138: fin_down02
+    400140: fin_tail
+    400142: fin_tail.001
+    400144: fin_up
+    400146: weakness_down
+    400148: weakness_up
+    400150: Bone_body
+    400152: Bone_mouth
+    400154: Bone_mouth_end
+    400156: Bone_root
+    400158: Bone_tail
+    400160: Bone_tin_down_L_01
+    400162: Bone_tin_down_L_01_end
+    400164: Bone_tin_down_L_02
+    400166: Bone_tin_down_L_02_end
+    400168: Bone_tin_down_R_01
+    400170: Bone_tin_down_R_01_end
+    400172: Bone_tin_down_R_02
+    400174: Bone_tin_down_R_02_end
+    400176: Bone_tin_tail_01
+    400178: Bone_tin_tail_01_end
+    400180: Bone_tin_tail_02
+    400182: Bone_tin_tail_02_end
+    400184: Bone_tin_top_01
+    400186: Bone_tin_top_01_end
+    400188: Bone_tin_top_02
+    400190: Bone_tin_top_02_end
+    400192: fin_down01_L
+    400194: fin_down01_R
+    400196: fin_down02_L
+    400198: fin_down02_R
+    400200: fin_tail_down
+    400202: fin_tail_up
+    2300000: pasted__pasted__pasted__pasted__pasted__pasted__pasted__polySur
+    2300002: pasted__pasted__polySurface102
+    2300004: pasted__pasted__polySurface105
+    2300006: pasted__pasted__polySurface77
+    2300008: pasted__pasted__polySurface86
+    2300010: pasted__pasted__polySurface89
+    2300012: pasted__pasted__polySurface90
+    2300014: pasted__pasted__polySurface91
+    2300016: pasted__pasted__polySurface92
+    2300018: pasted__pasted__polySurface93
+    2300020: pasted__pasted__polySurface94
+    2300022: pasted__polySurface102
+    2300024: pasted__polySurface105
+    2300026: pasted__polySurface106
+    2300028: pasted__polySurface77
+    2300030: pasted__polySurface86
+    2300032: pasted__polySurface89
+    2300034: pasted__polySurface90
+    2300036: pasted__polySurface91
+    2300038: pasted__polySurface92
+    2300040: pasted__polySurface93
+    2300042: pasted__polySurface94
+    2300044: polySurface106
+    2300046: polySurface107
+    2300048: polySurface108
+    2300050: polySurface77
+    2300052: polySurface86
+    2300054: polySurface89
+    2300056: polySurface90
+    2300058: polySurface91
+    2300060: polySurface92
+    2300062: polySurface93
+    2300064: polySurface94
+    2300066: armor_body_down
+    2300068: armor_body_up
+    2300070: armor_down
+    2300072: armor_head
+    2300074: armor_mouth_lv3
+    2300076: armor_tail_down
+    2300078: armor_tail_up
+    2300080: armor_up
+    2300082: body
+    2300084: head_lv2
+    2300086: head_lv3
+    2300088: mouth
+    2300090: fin_down01
+    2300092: fin_down02
+    2300094: fin_tail
+    2300096: fin_tail.001
+    2300098: fin_up
+    2300100: weakness_down
+    2300102: weakness_up
+    2300104: fin_down01_L
+    2300106: fin_down01_R
+    2300108: fin_down02_L
+    2300110: fin_down02_R
+    2300112: fin_tail_down
+    2300114: fin_tail_up
+    3300000: pasted__pasted__pasted__pasted__pasted__pasted__pasted__polySur
+    3300002: pasted__pasted__polySurface102
+    3300004: pasted__pasted__polySurface105
+    3300006: pasted__pasted__polySurface77
+    3300008: pasted__pasted__polySurface86
+    3300010: pasted__pasted__polySurface89
+    3300012: pasted__pasted__polySurface90
+    3300014: pasted__pasted__polySurface91
+    3300016: pasted__pasted__polySurface92
+    3300018: pasted__pasted__polySurface93
+    3300020: pasted__pasted__polySurface94
+    3300022: pasted__polySurface102
+    3300024: pasted__polySurface105
+    3300026: pasted__polySurface106
+    3300028: pasted__polySurface77
+    3300030: pasted__polySurface86
+    3300032: pasted__polySurface89
+    3300034: pasted__polySurface90
+    3300036: pasted__polySurface91
+    3300038: pasted__polySurface92
+    3300040: pasted__polySurface93
+    3300042: pasted__polySurface94
+    3300044: polySurface106
+    3300046: polySurface107
+    3300048: polySurface108
+    3300050: polySurface77
+    3300052: polySurface86
+    3300054: polySurface89
+    3300056: polySurface90
+    3300058: polySurface91
+    3300060: polySurface92
+    3300062: polySurface93
+    3300064: polySurface94
+    3300066: armor_body_down
+    3300068: armor_body_up
+    3300070: armor_down
+    3300072: armor_head
+    3300074: armor_mouth_lv3
+    3300076: armor_tail_down
+    3300078: armor_tail_up
+    3300080: armor_up
+    3300082: body
+    3300084: head_lv2
+    3300086: head_lv3
+    3300088: mouth
+    3300090: fin_down01
+    3300092: fin_down02
+    3300094: fin_tail
+    3300096: fin_tail.001
+    3300098: fin_up
+    3300100: weakness_down
+    3300102: weakness_up
+    3300104: fin_down01_L
+    3300106: fin_down01_R
+    3300108: fin_down02_L
+    3300110: fin_down02_R
+    3300112: fin_tail_down
+    3300114: fin_tail_up
+    4300000: polySurface108
+    4300002: polySurface107
+    4300004: pasted__pasted__polySurface105
+    4300006: pasted__pasted__polySurface102
+    4300008: pasted__pasted__polySurface94
+    4300010: pasted__pasted__polySurface93
+    4300012: pasted__pasted__polySurface92
+    4300014: pasted__pasted__polySurface91
+    4300016: pasted__pasted__polySurface90
+    4300018: pasted__pasted__polySurface89
+    4300020: pasted__pasted__polySurface86
+    4300022: pasted__pasted__polySurface77
+    4300024: pasted__pasted__pasted__pasted__pasted__pasted__pasted__polySur
+    4300026: pasted__polySurface91
+    4300028: pasted__polySurface86
+    4300030: polySurface91
+    4300032: body
+    4300034: head_lv3
+    4300036: armor_down
+    4300038: armor_up
+    4300040: armor_tail_down
+    4300042: armor_body_down
+    4300044: armor_body_up
+    4300046: armor_tail_up
+    4300048: armor_mouth_lv3
+    4300050: armor_head
+    4300052: head_lv2
+    4300054: mouth
+    4300056: fin_up
+    4300058: fin_down02
+    4300060: fin_down01
+    4300062: weakness_up
+    4300064: weakness_down
+    4300066: fin_tail.001
+    4300068: fin_tail
+    4300070: fin_down01_L
+    4300072: fin_down01_R
+    4300074: fin_down02_L
+    4300076: fin_down02_R
+    4300078: fin_tail_up
+    4300080: fin_tail_down
+    7400000: Armature|Swim
+    9500000: //RootNode
+    13700000: body
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 3
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Armature|Swim
+      takeName: Armature|Swim
+      firstFrame: 0
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone_root
+        weight: 1
+      - path: Armature/Bone_root/armor_head
+        weight: 1
+      - path: Armature/Bone_root/Bone_body
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/armor_body_down
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/armor_body_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/armor_down
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/armor_tail_down
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/armor_tail_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/armor_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_L_02
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_L_02/Bone_tin_down_L_02_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_L_02/fin_down02_R
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_R_02
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_R_02/Bone_tin_down_R_02_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_down_R_02/fin_down02_L
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_01
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_01/Bone_tin_tail_01_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_01/fin_tail_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_02
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_02/Bone_tin_tail_02_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/Bone_tin_tail_02/fin_tail_down
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tail/weakness_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tin_top_01
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tin_top_01/Bone_tin_top_01_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tin_top_01/fin_up
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tin_top_02
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/Bone_tin_top_02/Bone_tin_top_02_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_body/weakness_down
+        weight: 1
+      - path: Armature/Bone_root/Bone_mouth
+        weight: 1
+      - path: Armature/Bone_root/Bone_mouth/armor_mouth_lv3
+        weight: 1
+      - path: Armature/Bone_root/Bone_mouth/Bone_mouth_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_mouth/mouth
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_L_01
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_L_01/Bone_tin_down_L_01_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_L_01/fin_down01_L
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_R_01
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_R_01/Bone_tin_down_R_01_end
+        weight: 1
+      - path: Armature/Bone_root/Bone_tin_down_R_01/fin_down01_R
+        weight: 1
+      - path: Armature/Bone_root/head_lv2
+        weight: 1
+      - path: Armature/Bone_root/head_lv3
+        weight: 1
+      - path: body
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
-    Transform _transform;
+    protected Transform _transform;
     
     public enum Habit
     {
@@ -65,6 +65,7 @@ public class EnemyAI : MonoBehaviour
     public float minDelay = 1.5f;
     public float maxDelay = 3f;
     float delay;
+    public float chargeDelay;
     public float timer;
 
     public GameObject myExplosionParticle;
@@ -91,7 +92,7 @@ public class EnemyAI : MonoBehaviour
     public float lineOfSightRange = 3;
     public float fieldOfViewAngle = 110f;
 
-    public Transform target;
+    protected Transform target;
     public Vector3 targetPos;
     public LayerMask playerLayer;
 
@@ -201,11 +202,12 @@ public class EnemyAI : MonoBehaviour
     }
 
     private void RandomizerTargetPosition(ref float timer)
-    {
-        if (timer > maxDelay)
+    {        
+        if (timer > delay)
         {
+            delay = Random.Range(minDelay, maxDelay);
             GetRandomPos();
-            timer -= maxDelay;
+            timer -= delay;
         }
     }
 
@@ -213,11 +215,15 @@ public class EnemyAI : MonoBehaviour
     {
         if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
-            //_rigidbody.MoveRotation (Quaternion.RotateTowards (_rotation, targetRotation, 5));
-            rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
+            //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            
+            Vector3 targetDir = targetPos - position;
+            float step = rotateSpeed * Time.deltaTime;
+            Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
+            newDir.z = 0;
+            rotation = Quaternion.LookRotation(newDir);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-            //_rigidbody.AddForce (transform.forward * moveSpeed * 3);
         }
     }
 
@@ -276,7 +282,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    public void SeePlayer()
+    public virtual void SeePlayer()
     {
         if (attackType == AttackType.Shoot)
             ActiveGun(true);
@@ -330,7 +336,7 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 timer += Time.deltaTime;
-                if (timer > 2f)
+                if (timer > chargeDelay)
                 {
                     StartCoroutine(ChargeUpdate());
                     StopCoroutine(Chase());
@@ -348,7 +354,7 @@ public class EnemyAI : MonoBehaviour
             _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
             yield return null;
         }
-        ThisStage = Stage.Retreat;
+        yield return StartCoroutine(Chase());
     }
 
     IEnumerator AttackShoot()
@@ -452,7 +458,7 @@ public class EnemyAI : MonoBehaviour
         isFlip = false;
     }
 
-    IEnumerator Retreat()
+    public virtual IEnumerator Retreat()
     {
         if (habit == Habit.Protective)
         {
@@ -466,7 +472,6 @@ public class EnemyAI : MonoBehaviour
                 targetRotation = Quaternion.LookRotation(spawnPos - position);
                 rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
-
                 yield return null;
             } while (distance <= 0.3f);
 
