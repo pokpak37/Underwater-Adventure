@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyAI : MonoBehaviour
 {
     protected Transform _transform;
-    
+
     public enum Habit
     {
         NotFight, Argressive, Protective
@@ -98,7 +98,7 @@ public class EnemyAI : MonoBehaviour
     protected Transform target;
     public Vector3 targetPos;
     public LayerMask playerLayer;
-    
+
     bool gunsIsNotNull
     {
         get { return guns != null; }
@@ -129,7 +129,7 @@ public class EnemyAI : MonoBehaviour
     {
         _transform = transform;
         startAi = this;
-        
+
         guns = GetComponentsInChildren<Gun>();
         if (gunsIsNotNull)
         {
@@ -140,12 +140,12 @@ public class EnemyAI : MonoBehaviour
 
     void SetStatsByGameLevel()
     {
-        EnemyAI ai = LevelManager.instance.CalculateLevel(startAi,1);
+        EnemyAI ai = LevelManager.instance.CalculateLevel(startAi, 1);
         protectionRange = ai.protectionRange;
         detectRange = ai.detectRange;
         hp = ai.hp;
         hitDmg = ai.hitDmg;
-        lineOfSightRange  = ai.lineOfSightRange;
+        lineOfSightRange = ai.lineOfSightRange;
     }
 
     void Start()
@@ -165,20 +165,20 @@ public class EnemyAI : MonoBehaviour
         GetRandomPos(1);
         ThisStage = Stage.Idle;
         ThisAttackType = attackType;
-        //StartCoroutine(UpdateZPosAndTargetRotation());
+        StartCoroutine(UpdateZPosAndTargetRotation());
     }
 
     IEnumerator UpdateZPosAndTargetRotation()
     {
-        for(;;)
+        for (; ; )
         {
             transform.SetZ(0f);
             if (target != null)
                 targetRotation = Quaternion.LookRotation(target.position - position);
             yield return null;
-        }        
+        }
     }
-    
+
     IEnumerator Idle()
     {
         float timer = 0f;
@@ -194,7 +194,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     private void RandomizerTargetPosition(ref float timer)
-    {        
+    {
         if (timer > delay)
         {
             delay = Random.Range(minDelay, maxDelay);
@@ -209,13 +209,13 @@ public class EnemyAI : MonoBehaviour
         {
             //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
             //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-            
+
             Vector3 targetDir = targetPos - position;
             float step = rotateSpeed * Time.deltaTime;
             Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
             newDir.z = 0;
             rotation = Quaternion.LookRotation(newDir);
-            
+
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
         }
     }
@@ -285,6 +285,40 @@ public class EnemyAI : MonoBehaviour
         timer = 0f;
     }
 
+    private void OverAngleToFlip(bool isFlipToLeft, float time, float xRotationChange)
+    {
+        bool isOverAngle = xRotationChange > 30f || xRotationChange < 330f;
+        if (isOverAngle)
+            if (!isFlip)
+                Flip(isFlipToLeft, time);
+    }
+
+    private void Flip(bool isRight, float timeToFlip)
+    {
+        print("Flip");
+        if (gunsIsNotNull)
+            ActiveGun(false);
+
+        StartCoroutine(UpdateFlip(isRight, timeToFlip));
+    }
+
+    private IEnumerator UpdateFlip(bool isRight, float timeToFlip)
+    {
+        isFlip = true;
+        float yAxis = isRight ? 270f : 90f;
+        Quaternion targetRotation = Quaternion.Euler(rotation.x, yAxis, 0f);
+        float timeFlip = 0;
+        do
+        {
+            Quaternion.Slerp(rotation, targetRotation, timeToFlip);
+            timeFlip += Time.deltaTime;
+            yield return null;
+        } while (rotation.y > yAxis + 5 || rotation.y < yAxis - 5);
+
+        rotation = targetRotation;
+        isFlip = false;
+    }
+
     private void ActiveGun(bool active)
     {
         if (gunsIsNotNull)
@@ -300,13 +334,13 @@ public class EnemyAI : MonoBehaviour
 
             bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
             bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
-            
+
             if (isRight)
                 OverAngleToFlip(true, 1f, rotationChange.x);
             else if (isLeft)
                 OverAngleToFlip(false, 1f, rotationChange.x);
 
-           // RotateToTargetSide();
+            // RotateToTargetSide();
             RotateTowardTarget(targetRotation);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 
@@ -329,9 +363,9 @@ public class EnemyAI : MonoBehaviour
                 _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
             else
             {
-                if(isFacingTarget)
+                if (isFacingTarget)
                 {
-                    position.Set(position.x,position.y,0);
+                    position.Set(position.x, position.y, 0);
 
                     yield return new WaitForSeconds(chargeDelay);
                     StartCoroutine(ChargeUpdate());
@@ -344,21 +378,21 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ChargeUpdate()
     {
-        if(!unLimitChargeCount)
+        if (!unLimitChargeCount)
             chargeCount--;
-        if(chargeCount>0)
+        if (chargeCount > 0)
         {
             while (X_Distance(target.position, position) < 6f)
             {
                 _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
                 yield return null;
-            }        
-        }            
+            }
+        }
         else
             ThisStage = Stage.Retreat;
         isFacingTarget = false;
         StartCoroutine(AttackCharge());
-        
+
     }
 
     IEnumerator AttackShoot()
@@ -394,7 +428,7 @@ public class EnemyAI : MonoBehaviour
                     yDis = target.position.y - position.y;
                     timer = 0;
                 }
-                
+
                 if (yDis > 0.3f)
                     _transform.Translate(Vector3.up * idelMoveSpeed * Time.deltaTime);
                 else if (yDis < -0.3f)
@@ -442,13 +476,14 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-
+        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        /*
         Vector3 targetDir = target.position - transform.position;
         float step = rotateSpeed * Time.deltaTime;
         Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
         newDir.z = 0;
         rotation = Quaternion.LookRotation(newDir);
+         */
     }
 
     private bool RotateToTargetSide()
@@ -460,7 +495,7 @@ public class EnemyAI : MonoBehaviour
         bool isFacingTarget = false;
         if (
             ((rotation.eulerAngles.y > 85f || rotation.eulerAngles.y < 95f)
-            && isRightSide) || 
+            && isRightSide) ||
            ((rotation.eulerAngles.y > 265f || rotation.eulerAngles.y < 275f) && !isRightSide)
             )
             isFacingTarget = true;
@@ -468,39 +503,7 @@ public class EnemyAI : MonoBehaviour
         return isFacingTarget;
     }
 
-    private void OverAngleToFlip(bool isFlipToLeft, float time, float xRotationChange)
-    {
-        bool isOverAngle = xRotationChange > 30f || xRotationChange < 330f;
-        if (isOverAngle)
-            if (!isFlip)
-                Flip(isFlipToLeft, time);
-    }
 
-    private void Flip(bool isRight, float timeToFlip)
-    {
-        print("Flip");
-        if (gunsIsNotNull)
-            ActiveGun(false);
-
-        StartCoroutine(UpdateFlip(isRight, timeToFlip));
-    }
-
-    private IEnumerator UpdateFlip(bool isRight, float timeToFlip)
-    {
-        isFlip = true;
-        float yAxis = isRight ? 270f : 90f;
-        Quaternion targetRotation = Quaternion.Euler(rotation.x, yAxis, 0f);
-        float timeFlip = 0;
-        do
-        {
-            Quaternion.Slerp(rotation, targetRotation, timeToFlip);
-            timeFlip += Time.deltaTime;
-            yield return null;
-        } while (timeFlip < timeToFlip);
-
-        rotation = targetRotation;
-        isFlip = false;
-    }
 
     public virtual IEnumerator Retreat()
     {
@@ -524,7 +527,7 @@ public class EnemyAI : MonoBehaviour
         }
         else if (habit == Habit.Argressive)
         {
-			ActiveGun(false);
+            ActiveGun(false);
             //StopCoroutine(UpdateZPosAndTargetRotation());
             do
             {
@@ -565,6 +568,6 @@ public class EnemyAI : MonoBehaviour
         //PoolingManager.instance.enemyPooling.ReturnToPool(this);
     }
 
-    
+
 
 }
