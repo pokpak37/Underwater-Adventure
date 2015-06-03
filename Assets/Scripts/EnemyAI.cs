@@ -377,9 +377,9 @@ public class EnemyAI : MonoBehaviour
             float xDistance = X_Distance(position, target.position);
 
             if (xDistance < distanceGoBack)
-                _transform.Translate(Vector3.back * idelMoveSpeed * 3 * Time.deltaTime);
+                _transform.Translate(Vector3.back * idelMoveSpeed * Time.deltaTime);
             else if (xDistance > distanceFollow)
-                _transform.Translate(Vector3.forward * idelMoveSpeed * 3 * Time.deltaTime);
+                _transform.Translate(Vector3.forward * idelMoveSpeed * Time.deltaTime);
 
             yield return null;
         }
@@ -415,7 +415,13 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+
+        Vector3 targetDir = target.position - transform.position;
+        float step = rotateSpeed * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
+        newDir.z = 0;
+        rotation = Quaternion.LookRotation(newDir);
     }
 
     private void RotateToTargetSide()
@@ -493,7 +499,7 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    public void GetHit(int dmg)
+    public void GetHit(float dmg)
     {
         hp -= dmg;
         print(name + " get hit : " + dmg + " HP : " + hp);

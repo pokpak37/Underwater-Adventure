@@ -132,7 +132,7 @@ public class PlayerControl : MonoBehaviour {
 		{
 			EnemyAI enemyScript = other.GetComponent<EnemyAI>();
 			GetHit(enemyScript.hitDmg);
-			Destroy(other.gameObject);
+            enemyScript.GetHit(5f);
 		}
 	}
 	

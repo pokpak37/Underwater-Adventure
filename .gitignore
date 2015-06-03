@@ -5,6 +5,7 @@ Temp/*
 *.pidb
 *.userprefs
 *.unityproj
+*.suo
 UnderWater/UnderWater.exe
 UnderWater/UnderWater_Data/Managed/Assembly-CSharp-firstpass.dll
 UnderWater/UnderWater_Data/Managed/Assembly-CSharp.dll
