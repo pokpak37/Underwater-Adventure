@@ -417,13 +417,13 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
-        Vector3 targetDir = target.position - transform.position;
-        float step = rotateSpeed * Time.deltaTime;
-        Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
-        newDir.z = 0;
-        rotation = Quaternion.LookRotation(newDir);
+        //Vector3 targetDir = target.position - transform.position;
+        //float step = rotateSpeed * Time.deltaTime;
+        //Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
+        //newDir.z = 0;
+        //rotation = Quaternion.LookRotation(newDir);
     }
 
     private void RotateToTargetSide()
