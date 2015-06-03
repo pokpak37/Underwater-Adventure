@@ -203,14 +203,15 @@ public class EnemyAI : MonoBehaviour
     {
         if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
-            //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-            
+            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
+            rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            /*
             Vector3 targetDir = targetPos - position;
             float step = rotateSpeed * Time.deltaTime;
             Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
             newDir.z = 0;
             rotation = Quaternion.LookRotation(newDir);
+            */
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
         }
     }
@@ -295,12 +296,12 @@ public class EnemyAI : MonoBehaviour
 
             bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
             bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
-            /*
+            
             if (isRight)
                 OverAngleToFlip(true, 1f, rotationChange.x);
             else if (isLeft)
                 OverAngleToFlip(false, 1f, rotationChange.x);
-            */
+
            // RotateToTargetSide();
             RotateTowardTarget(targetRotation);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
@@ -327,8 +328,9 @@ public class EnemyAI : MonoBehaviour
                 timer += Time.deltaTime;
                 if (timer > chargeDelay)
                 {
-                    yield return ChargeUpdate().MoveNext();
-                    //StartCoroutine(ChargeUpdate());
+                    //yield return ChargeUpdate().MoveNext();
+
+					attackUpdate=ChargeUpdate;
                     //StopCoroutine(Chase());
                     //yield break;
                 }
@@ -345,7 +347,7 @@ public class EnemyAI : MonoBehaviour
             yield return null;
         }
         //yield return StartCoroutine(Chase());
-        yield return null;
+		attackUpdate=AttackCharge;
     }
 
     IEnumerator AttackShoot()
@@ -478,7 +480,8 @@ public class EnemyAI : MonoBehaviour
         }
         else if (habit == Habit.Argressive)
         {
-            StopCoroutine(UpdateZPosAndTargetRotation());
+			ActiveGun(false);
+            //StopCoroutine(UpdateZPosAndTargetRotation());
             do
             {
                 targetRotation = Quaternion.LookRotation(Vector3.forward);
