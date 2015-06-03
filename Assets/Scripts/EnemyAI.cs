@@ -406,7 +406,7 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
         //Vector3 targetDir = target.position - transform.position;
         //float step = rotateSpeed * Time.deltaTime;
