@@ -295,12 +295,13 @@ public class EnemyAI : MonoBehaviour
 
             bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
             bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
-
+            /*
             if (isRight)
                 OverAngleToFlip(true, 1f, rotationChange.x);
             else if (isLeft)
                 OverAngleToFlip(false, 1f, rotationChange.x);
-
+            */
+           // RotateToTargetSide();
             RotateTowardTarget(targetRotation);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 
@@ -405,7 +406,7 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
         Vector3 targetDir = target.position - transform.position;
         float step = rotateSpeed * Time.deltaTime;
@@ -432,6 +433,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Flip(bool isRight, float timeToFlip)
     {
+        print("Flip");
         if (gunsIsNotNull)
             ActiveGun(false);
 
@@ -448,7 +450,7 @@ public class EnemyAI : MonoBehaviour
         {
             Quaternion.Slerp(rotation, targetRotation, timeToFlip);
             yield return null;
-        } while (rotation.y > yAxis - 5f || rotation.y < yAxis + 5);
+        } while (rotation.y > yAxis + 5f || rotation.y < yAxis - 5);
 
         rotation = targetRotation;
         isFlip = false;
