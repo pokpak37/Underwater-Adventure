@@ -77,4 +77,9 @@ public class Gun : MonoBehaviour {
 
 	}
 
+    public void LevelUp()
+    {
+
+    }
+
 }

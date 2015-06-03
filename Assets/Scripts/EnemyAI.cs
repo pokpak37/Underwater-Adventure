@@ -340,7 +340,6 @@ public class EnemyAI : MonoBehaviour
             else if (isLeft)
                 OverAngleToFlip(false, 1f, rotationChange.x);
 
-            // RotateToTargetSide();
             RotateTowardTarget(targetRotation);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 

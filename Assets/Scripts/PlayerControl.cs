@@ -23,9 +23,12 @@ public class PlayerControl : MonoBehaviour {
 	float angle;
 	//float rotateSpeed = 180f;
 	
-	public bool headToLeft = true; 
+	public bool headToLeft = true;
+
+    public Gun[] mainGuns;
+    public Gun[] subGuns;
 	
-	
+
 	
 	
 	public static PlayerControl instance;
@@ -126,7 +129,7 @@ public class PlayerControl : MonoBehaviour {
 	{
 		if(other.tag == "Item")
 		{
-			
+			//
 		}
 		if(other.tag == "Enemy")
 		{
