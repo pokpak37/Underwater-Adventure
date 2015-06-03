@@ -69,6 +69,9 @@ public class EnemyAI : MonoBehaviour
     public float maxDelay = 3f;
     float delay;
     public float chargeDelay;
+    public int chargeCount;
+    public bool unLimitChargeCount;
+    bool isFacingTarget;
     public float timer;
 
     public GameObject myExplosionParticle;
@@ -159,9 +162,10 @@ public class EnemyAI : MonoBehaviour
         moveSpeed = idelMoveSpeed;
         //savePosition = position;
         spawnPos = position;
-        GetRandomPos();
+        GetRandomPos(1);
         ThisStage = Stage.Idle;
         ThisAttackType = attackType;
+        //StartCoroutine(UpdateZPosAndTargetRotation());
     }
 
     IEnumerator UpdateZPosAndTargetRotation()
@@ -194,7 +198,7 @@ public class EnemyAI : MonoBehaviour
         if (timer > delay)
         {
             delay = Random.Range(minDelay, maxDelay);
-            GetRandomPos();
+            GetRandomPos(1);
             timer -= delay;
         }
     }
@@ -203,31 +207,31 @@ public class EnemyAI : MonoBehaviour
     {
         if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
-            rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-            /*
+            //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
+            //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            
             Vector3 targetDir = targetPos - position;
             float step = rotateSpeed * Time.deltaTime;
             Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
             newDir.z = 0;
             rotation = Quaternion.LookRotation(newDir);
-            */
+            
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
         }
     }
 
-    void GetRandomPos()
+    void GetRandomPos(float multiplyRange)
     {
         if (habit == Habit.Protective)
         {
             targetPos = spawnPos;
 
-            targetPos.x += Random.Range(-protectionRange, protectionRange);
-            targetPos.y += Random.Range(-protectionRange, protectionRange);
+            targetPos.x += Random.Range(-protectionRange / multiplyRange, protectionRange / multiplyRange);
+            targetPos.y += Random.Range(-protectionRange / multiplyRange, protectionRange / multiplyRange);
         }
         else
         {
-            targetPos = Random.insideUnitSphere * protectionRange;
+            targetPos = Random.insideUnitSphere * protectionRange / multiplyRange;
             targetPos += position;
         }
         targetPos.z = 0;
@@ -312,12 +316,12 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator AttackCharge()
     {
-        float timer = 0f;
         for (; ; )
         {
             float yDis = target.position.y - position.y;
 
-            RotateToTargetSide();
+            isFacingTarget = false;
+            isFacingTarget = RotateToTargetSide();
 
             if (yDis > 0.3f)
                 _transform.Translate(Vector3.up * preChargeMoveSpeed * Time.deltaTime);
@@ -325,14 +329,13 @@ public class EnemyAI : MonoBehaviour
                 _transform.Translate(Vector3.down * preChargeMoveSpeed * Time.deltaTime);
             else
             {
-                timer += Time.deltaTime;
-                if (timer > chargeDelay)
+                if(isFacingTarget)
                 {
-                    //yield return ChargeUpdate().MoveNext();
+                    position.Set(position.x,position.y,0);
 
-					attackUpdate=ChargeUpdate;
-                    //StopCoroutine(Chase());
-                    //yield break;
+                    yield return new WaitForSeconds(chargeDelay);
+                    StartCoroutine(ChargeUpdate());
+                    yield break;
                 }
             }
             yield return null;
@@ -341,26 +344,57 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ChargeUpdate()
     {
-        while (X_Distance(target.position, position) < 10f)
+        if(!unLimitChargeCount)
+            chargeCount--;
+        if(chargeCount>0)
         {
-            _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
-            yield return null;
-        }
-        //yield return StartCoroutine(Chase());
-		attackUpdate=AttackCharge;
+            while (X_Distance(target.position, position) < 6f)
+            {
+                _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
+                yield return null;
+            }        
+        }            
+        else
+            ThisStage = Stage.Retreat;
+        isFacingTarget = false;
+        StartCoroutine(AttackCharge());
+        
     }
 
     IEnumerator AttackShoot()
     {
+        float timer = 0;
+        float yDis = target.position.y - position.y;
         for (; ; )
         {
+            timer += Time.deltaTime;
             if (isLockPlayer)
+            {
                 RotateTowardTarget(targetRotation);
+                if (timer >= delay)
+                {
+                    GetRandomPos(0.3f);
+                    timer = 0;
+                }
+                position = Vector3.MoveTowards(position, targetPos, idelMoveSpeed * Time.deltaTime);
+
+            }
             else
             {
-                RotateToTargetSide();
+                isFacingTarget = false;
+                isFacingTarget = RotateToTargetSide();
 
-                float yDis = target.position.y - position.y;
+                if (isFacingTarget)
+                    ActiveGun(true);
+                else
+                    ActiveGun(false);
+
+                if (timer >= delay)
+                {
+                    yDis = target.position.y - position.y;
+                    timer = 0;
+                }
+                
                 if (yDis > 0.3f)
                     _transform.Translate(Vector3.up * idelMoveSpeed * Time.deltaTime);
                 else if (yDis < -0.3f)
@@ -408,21 +442,30 @@ public class EnemyAI : MonoBehaviour
 
     private void RotateTowardTarget(Quaternion targetRotation)
     {
-        rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+        //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
-        //Vector3 targetDir = target.position - transform.position;
-        //float step = rotateSpeed * Time.deltaTime;
-        //Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
-        //newDir.z = 0;
-        //rotation = Quaternion.LookRotation(newDir);
+        Vector3 targetDir = target.position - transform.position;
+        float step = rotateSpeed * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
+        newDir.z = 0;
+        rotation = Quaternion.LookRotation(newDir);
     }
 
-    private void RotateToTargetSide()
+    private bool RotateToTargetSide()
     {
         bool isRightSide = target.position.x > position.x;
         rotation = Quaternion.Slerp(rotation,
             Quaternion.LookRotation(isRightSide ? Vector3.right : Vector3.left),
             Time.deltaTime * rotateSpeed * 3);
+        bool isFacingTarget = false;
+        if (
+            ((rotation.eulerAngles.y > 85f || rotation.eulerAngles.y < 95f)
+            && isRightSide) || 
+           ((rotation.eulerAngles.y > 265f || rotation.eulerAngles.y < 275f) && !isRightSide)
+            )
+            isFacingTarget = true;
+
+        return isFacingTarget;
     }
 
     private void OverAngleToFlip(bool isFlipToLeft, float time, float xRotationChange)
@@ -447,12 +490,13 @@ public class EnemyAI : MonoBehaviour
         isFlip = true;
         float yAxis = isRight ? 270f : 90f;
         Quaternion targetRotation = Quaternion.Euler(rotation.x, yAxis, 0f);
-
+        float timeFlip = 0;
         do
         {
             Quaternion.Slerp(rotation, targetRotation, timeToFlip);
+            timeFlip += Time.deltaTime;
             yield return null;
-        } while (rotation.y > yAxis + 5f || rotation.y < yAxis - 5);
+        } while (timeFlip < timeToFlip);
 
         rotation = targetRotation;
         isFlip = false;
