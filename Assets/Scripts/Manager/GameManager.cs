@@ -6,9 +6,9 @@ public class GameManager : MonoBehaviour {
 
 
 	IEnumerator Start()
-	{	
+	{
 
-		AsyncOperation async = Application.LoadLevelAdditiveAsync("Level02");
+        AsyncOperation async = Application.LoadLevelAdditiveAsync("TestAIAndItem");
 
 		do
 		{
@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour {
 		UIGamePlayManager.instance.loadingImage.SetActive(false);
 		UIGamePlayManager.instance.loadingText.gameObject.SetActive(false);
 
+        PlayerControl.instance.gameObject.SetActive(true);
 		PlayerControl.instance.ActivedGun();
 		PlayerControl.instance.StartMovementControl();
         LevelManager.instance.ActiveLevelUp();

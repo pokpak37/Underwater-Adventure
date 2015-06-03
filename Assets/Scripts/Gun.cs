@@ -21,6 +21,8 @@ public class Gun : MonoBehaviour {
 	float timerRound;
 	int bulletLeftInRound;
 
+    public int level = 1;
+
 //	Vector3 rotationOfBullet = new Vector3(0,90,0);
 
 	void Start()
@@ -79,7 +81,7 @@ public class Gun : MonoBehaviour {
 
     public void LevelUp()
     {
-
+        
     }
 
 }

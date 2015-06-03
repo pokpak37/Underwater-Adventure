@@ -26,7 +26,7 @@ public class PlayerControl : MonoBehaviour {
 	public bool headToLeft = true;
 
     public Gun[] mainGuns;
-    public Gun[] subGuns;
+    public GameObject[] subGuns;
 	
 
 	
@@ -36,7 +36,7 @@ public class PlayerControl : MonoBehaviour {
 	Rigidbody myRigidbody;
 	Renderer myRend;
 
-	Gun[] allgun;
+	public Gun[] allgun;
 	
 	void Awake()
 	{
@@ -67,6 +67,8 @@ public class PlayerControl : MonoBehaviour {
 			gun.submarine = myTranform;
 			gun.isEnemy = false;
 		}
+        subGuns[0].SetActive(false);
+        subGuns[1].SetActive(false);
 	}
 	
 	IEnumerator MovementControl()
@@ -129,7 +131,9 @@ public class PlayerControl : MonoBehaviour {
 	{
 		if(other.tag == "Item")
 		{
-			//
+            Items item = other.GetComponent<Items>();
+            item.ActiveItem(this);
+            Destroy(other.gameObject);
 		}
 		if(other.tag == "Enemy")
 		{

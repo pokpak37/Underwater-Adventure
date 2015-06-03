@@ -12,6 +12,20 @@ public class Items : MonoBehaviour {
 
     PlayerControl playerScript;
 
+    void Start()
+    {
+        StartCoroutine(Swing());
+    }
+
+    IEnumerator Swing()
+    {
+        for (; ; )
+        {
+
+            yield return null;
+        }
+    }
+
     public void ActiveItem(PlayerControl player)
     {
         playerScript = player;
@@ -28,14 +42,14 @@ public class Items : MonoBehaviour {
 
     void Holming(PlayerControl player)
     {
-        player.subGuns[0].enabled = false;
-        player.subGuns[1].enabled = true;
+        player.subGuns[0].SetActive(false);
+        player.subGuns[1].SetActive(true);
     }
 
     void Missile(PlayerControl player)
     {
-        player.subGuns[0].enabled = true;
-        player.subGuns[1].enabled = false;
+        player.subGuns[0].SetActive(true);
+        player.subGuns[1].SetActive(false);
     }
 
     void Upgrade(PlayerControl player)

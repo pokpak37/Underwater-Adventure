@@ -5,10 +5,7 @@ public class EnemyBoss_RockFish : EnemyAI
 {
     public AttackType attackType1;
     public AttackType attackType2;
-
-    public int totalHp;
-
-
+    
     Dictionary<string, List<GameObject>> dicComponents = new Dictionary<string, List<GameObject>>();
 
     public List<GameObject> breakAbleComponents = new List<GameObject>();
@@ -19,17 +16,26 @@ public class EnemyBoss_RockFish : EnemyAI
 
     public override void SeePlayer()
     {
-        ThisAttackType = Random.Range(0, 2) == 0 ? attackType1 : attackType2;
-        print(ThisAttackType.ToString());
+        RandomAtkType();
         base.SeePlayer();
     }
-
-    public override IEnumerator Retreat()
+    
+    public override IEnumerator AttackShoot()
     {
-        base.Retreat();
+        float timer2 = 0;
+        timer2 += Time.deltaTime;
+        if (timer2 > 6)
+        {
+            RandomAtkType();
+            StartCoroutine(Chase());
+        }
 
+        return base.AttackShoot();
+    }
 
-
-        yield return null;
+    void RandomAtkType()
+    {
+        ThisAttackType = Random.Range(0, 2) == 0 ? attackType1 : attackType2;
+        print(ThisAttackType.ToString());
     }
 }

@@ -11,7 +11,7 @@ public class RespawnPoint : MonoBehaviour {
 	void Awake()
 	{
 		respawnPointTransforms = GetComponentsInChildren<Transform>();
-		PlayerControl.instance.transform.position = respawnPointTransforms[Random.Range(1,4)].position;
+		PlayerControl.instance.transform.position = respawnPointTransforms[Random.Range(1,1)].position;
 	}
 
 }
