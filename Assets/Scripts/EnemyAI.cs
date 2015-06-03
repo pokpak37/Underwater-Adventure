@@ -338,9 +338,10 @@ public class EnemyAI : MonoBehaviour
                 timer += Time.deltaTime;
                 if (timer > chargeDelay)
                 {
-                    StartCoroutine(ChargeUpdate());
-                    StopCoroutine(Chase());
-                    yield break;
+                    yield return ChargeUpdate().MoveNext();
+                    //StartCoroutine(ChargeUpdate());
+                    //StopCoroutine(Chase());
+                    //yield break;
                 }
             }
             yield return null;
@@ -354,7 +355,8 @@ public class EnemyAI : MonoBehaviour
             _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
             yield return null;
         }
-        yield return StartCoroutine(Chase());
+        //yield return StartCoroutine(Chase());
+        yield return null;
     }
 
     IEnumerator AttackShoot()
