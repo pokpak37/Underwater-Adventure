@@ -104,15 +104,7 @@ public class Bullet : MonoBehaviour {
 						distance = diff;
 						target = xxx.transform;
 					}
-				}/*
-				if(target!=null)
-				{
-					float difffff = (target.transform.position - transform.position).sqrMagnitude;   
-					if(difffff>limitHolmingRange||difffff<limitHolmingRange/3)
-					{
-						target = null;
-					}
-				}*/
+				}
 			}
 			else
 			{
@@ -126,29 +118,13 @@ public class Bullet : MonoBehaviour {
 
 		if (target == null)
 			return;		
-		/*	
-		Quaternion targetRotation = Quaternion.LookRotation (target.position - transform.position);
-		//_rigidbody.MoveRotation (Quaternion.RotateTowards (transform.rotation, targetRotation, _torque));
-		transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * _torque);
-		*/
-
+	
 		Vector3 targetDir = target.position - transform.position;
 		float step = _torque * Time.deltaTime;
 		Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
 		newDir.z = 0;
 		transform.rotation = Quaternion.LookRotation(newDir);
-		/*
-		Vector3 qqq = targetRotation.eulerAngles;
-
-		//qqq.y = 90;
-
-		Vector3 aaa = transform.rotation.eulerAngles;
-
-		transform.Rotate (Vector3.right,_torque);
-		transform.eulerAngles = Vector3.RotateTowards(aaa,qqq,_torque,1);
-
-		//transform.eulerAngles = Vector3.Lerp(aaa,qqq,1);
-			*/
+	
 	}
 
 	public void Drop()

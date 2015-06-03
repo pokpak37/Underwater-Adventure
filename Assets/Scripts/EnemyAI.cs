@@ -42,6 +42,10 @@ public class EnemyAI : MonoBehaviour
     public float protectionRange;
     public float detectRange;
     float retreatRange;
+
+    public float lineOfSightRange = 3;
+    public float fieldOfViewAngle = 110f;
+
     public float hp = 15;
     public float hitDmg;
 
@@ -50,8 +54,7 @@ public class EnemyAI : MonoBehaviour
 
     Vector3 moveDirection;
     public bool isLockPlayer;
-    public GameObject bullet;
-    public float firerate;
+    public Gun[] guns;
     float moveSpeed;
     public float idelMoveSpeed;
     float chaseMoveSpeed;
@@ -89,15 +92,10 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    public float lineOfSightRange = 3;
-    public float fieldOfViewAngle = 110f;
-
     protected Transform target;
     public Vector3 targetPos;
     public LayerMask playerLayer;
-
-    Gun[] guns;
-
+    
     bool gunsIsNotNull
     {
         get { return guns != null; }
@@ -122,9 +120,12 @@ public class EnemyAI : MonoBehaviour
 
     Quaternion targetRotation;
 
+    EnemyAI startAi;
+
     void Awake()
     {
         _transform = transform;
+        startAi = this;
         
         guns = GetComponentsInChildren<Gun>();
         if (gunsIsNotNull)
@@ -136,9 +137,12 @@ public class EnemyAI : MonoBehaviour
 
     void SetStatsByGameLevel()
     {
-       // EnemyAI thisAI = this.GetComponent<EnemyAI>();
-       // LevelControl.instance.CalculateLevel(1, ref protectionRange, ref detectRange,
-         //                       ref hp, ref hitDmg, ref lineOfSightRange);
+        EnemyAI ai = LevelManager.instance.CalculateLevel(startAi,1);
+        protectionRange = ai.protectionRange;
+        detectRange = ai.detectRange;
+        hp = ai.hp;
+        hitDmg = ai.hitDmg;
+        lineOfSightRange  = ai.lineOfSightRange;
     }
 
     void Start()
@@ -170,23 +174,7 @@ public class EnemyAI : MonoBehaviour
             yield return null;
         }        
     }
-
-    //void Update()
-    //{
-    //    switch (AIStage)
-    //    {
-    //        case Stage.Idle: StageIdle();
-    //            break;
-    //        case Stage.Chase: StageChase();
-    //            break;
-    //        case Stage.Retreat: StageRetreat();
-    //            break;
-    //        default: StageIdle();
-    //            break;
-    //    }
-    //    transform.SetZ(0);
-    //}
-
+    
     IEnumerator Idle()
     {
         float timer = 0f;
@@ -419,11 +407,11 @@ public class EnemyAI : MonoBehaviour
     {
         rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
-        //Vector3 targetDir = target.position - transform.position;
-        //float step = rotateSpeed * Time.deltaTime;
-        //Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
-        //newDir.z = 0;
-        //rotation = Quaternion.LookRotation(newDir);
+        Vector3 targetDir = target.position - transform.position;
+        float step = rotateSpeed * Time.deltaTime;
+        Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0F);
+        newDir.z = 0;
+        rotation = Quaternion.LookRotation(newDir);
     }
 
     private void RotateToTargetSide()
