@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour {
 
 		PlayerControl.instance.ActivedGun();
 		PlayerControl.instance.StartMovementControl();
+        LevelManager.instance.ActiveLevelUp();
 	}
 
 
