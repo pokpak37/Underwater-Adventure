@@ -170,11 +170,14 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator UpdateZPosAndTargetRotation()
     {
+        int x = 0;
         for (; ; )
         {
             transform.SetZ(0f);
             if (target != null)
                 targetRotation = Quaternion.LookRotation(target.position - position);
+            x++;
+            print("SETZ = 0 : "+ x);
             yield return null;
         }
     }
@@ -207,15 +210,26 @@ public class EnemyAI : MonoBehaviour
     {
         if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
-            rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
+            //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            /*
+            Vector3 targetDir = targetPos - position;
+            float step = rotateSpeed * Time.deltaTime;
+            Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
+            newDir.z = 0;
+            rotation = Quaternion.LookRotation(newDir);
+            */
+            var rotationChange = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
-            //Vector3 targetDir = targetPos - position;
-            //float step = rotateSpeed * Time.deltaTime;
-            //Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
-            //newDir.z = 0;
-            //rotation = Quaternion.LookRotation(newDir);
+            bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
+            bool isLeft = rotationChange.y > 260f || rotationChange.y < 280f;
 
+            if (isRight)
+                OverAngleToFlip(true, 1f, rotationChange.x);
+            else if (isLeft)
+                OverAngleToFlip(false, 1f, rotationChange.x);
+
+            RotateTowardTarget(targetRotation);
             _transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
         }
     }
@@ -508,8 +522,9 @@ public class EnemyAI : MonoBehaviour
 
 
 
-    public virtual IEnumerator Retreat()
+    public IEnumerator Retreat()
     {
+        StopCoroutine(UpdateZPosAndTargetRotation());
         if (habit == Habit.Protective)
         {
             float distance;
@@ -537,6 +552,7 @@ public class EnemyAI : MonoBehaviour
                 targetRotation = Quaternion.LookRotation(Vector3.forward);
                 rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
+                print("GO RETREAT!!");
                 yield return null;
             } while (position.z < 15f);
             Destruct();
