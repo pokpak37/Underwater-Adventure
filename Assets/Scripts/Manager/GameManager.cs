@@ -7,8 +7,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator Start()
 	{
-
-        AsyncOperation async = Application.LoadLevelAdditiveAsync("TestAIAndItem");
+        AsyncOperation async = Application.LoadLevelAdditiveAsync("Level01");
 
 		do
 		{

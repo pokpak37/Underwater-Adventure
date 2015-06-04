@@ -170,14 +170,14 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator UpdateZPosAndTargetRotation()
     {
-        int x = 0;
         for (; ; )
         {
+            if (stage == Stage.Retreat)
+                yield break;
             transform.SetZ(0f);
             if (target != null)
                 targetRotation = Quaternion.LookRotation(target.position - position);
-            x++;
-            print("SETZ = 0 : "+ x);
+            
             yield return null;
         }
     }
@@ -210,15 +210,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (Mathf.Abs(Vector2.Distance(position, targetPos)) > 0.3f)
         {
-            //Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
-            //rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
-            /*
-            Vector3 targetDir = targetPos - position;
-            float step = rotateSpeed * Time.deltaTime;
-            Vector3 newDir = Vector3.RotateTowards(_transform.forward, targetDir, step, 0.0F);
-            newDir.z = 0;
-            rotation = Quaternion.LookRotation(newDir);
-            */
+            Quaternion targetRotation = Quaternion.LookRotation(targetPos - position);
             var rotationChange = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed);
 
             bool isRight = rotationChange.y > 80f || rotationChange.y < 100f;
@@ -393,20 +385,18 @@ public class EnemyAI : MonoBehaviour
     {
         if (!unLimitChargeCount)
             chargeCount--;
-
-        while (X_Distance(target.position, position) < 6f)
+        if (chargeCount >= 0)
         {
-            _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
-            yield return null;
-        }
-        if (chargeCount > 0)
-        {
-            isFacingTarget = false;
-            StartCoroutine(AttackCharge());
+            while (X_Distance(target.position, position) < 10)
+            {
+                _transform.Translate(Vector3.forward * moveSpeed * 1.5f * Time.deltaTime);
+                yield return null;
+            }
         }
         else
             ThisStage = Stage.Retreat;
-
+        isFacingTarget = false;
+        StartCoroutine(AttackCharge());
 
 
     }
@@ -522,9 +512,8 @@ public class EnemyAI : MonoBehaviour
 
 
 
-    public IEnumerator Retreat()
+    IEnumerator Retreat()
     {
-        StopCoroutine(UpdateZPosAndTargetRotation());
         if (habit == Habit.Protective)
         {
             float distance;
@@ -545,14 +534,14 @@ public class EnemyAI : MonoBehaviour
         }
         else if (habit == Habit.Argressive)
         {
-            ActiveGun(false);
             StopCoroutine(UpdateZPosAndTargetRotation());
+            ActiveGun(false);
             do
             {
                 targetRotation = Quaternion.LookRotation(Vector3.forward);
                 rotation = Quaternion.Slerp(rotation, targetRotation, Time.deltaTime * rotateSpeed * 3);
                 _transform.Translate(Vector3.forward * moveSpeed * 1.3f * Time.deltaTime);
-                print("GO RETREAT!!");
+                
                 yield return null;
             } while (position.z < 15f);
             Destruct();
